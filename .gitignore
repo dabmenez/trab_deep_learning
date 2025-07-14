@@ -1,0 +1,5 @@
+# Ignore dataset and generated files
+/data/
+training_metrics.png
+best_model.pth
+__pycache__/

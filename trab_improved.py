@@ -104,7 +104,9 @@ def validate(loader):
             all_preds.append(pred)
             all_labels.append(data.y)
     
-    acc = accuracy_score(torch.cat(all_labels), torch.cat(all_preds))
+    preds = torch.cat(all_preds).cpu()
+    labels = torch.cat(all_labels).cpu()
+    acc = accuracy_score(labels, preds)
     return total_loss / len(loader), acc
 
 def test(loader):
@@ -119,8 +121,8 @@ def test(loader):
             all_preds.append(pred)
             all_labels.append(data.y)
     
-    all_preds = torch.cat(all_preds)
-    all_labels = torch.cat(all_labels)
+    all_preds = torch.cat(all_preds).cpu()
+    all_labels = torch.cat(all_labels).cpu()
     acc = accuracy_score(all_labels, all_preds)
     
     return acc, all_preds, all_labels
@@ -171,7 +173,7 @@ print(f'\nResultado Final - Acurácia no Teste: {test_acc:.4f}')
 
 # Relatório de classificação detalhado
 print("\nRelatório de Classificação:")
-print(classification_report(test_labels, test_preds))
+print(classification_report(test_labels.cpu(), test_preds.cpu()))
 
 # Plotagem das métricas
 plt.figure(figsize=(12, 4))

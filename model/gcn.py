@@ -12,7 +12,8 @@ class GCN3DClassifier(torch.nn.Module):
         self.lin1 = torch.nn.Linear(hidden_dim, hidden_dim // 2)
         self.lin2 = torch.nn.Linear(hidden_dim // 2, num_classes)
         
-    def forward(self, x, edge_index, batch):
+    def forward(self, data):
+        x, edge_index, batch = data.pos, data.edge_index, data.batch
         # Primeira camada convolucional
         x = self.conv1(x, edge_index)
         x = F.relu(x)
@@ -40,16 +41,21 @@ class GCN3DClassifier(torch.nn.Module):
 
 # https://towardsdatascience.com/graph-neural-networks-with-pyg-on-node-classification-link-prediction-and-anomaly-detection-14aa38fe1275/
 class GCN(torch.nn.Module):
-    def __init__(self, dataset):
+    def __init__(self, input_ch, num_classes):
         super().__init__()
-        self.conv1 = GCNConv(dataset.num_node_features, 16)
-        self.conv2 = GCNConv(16, dataset.num_classes)
+        self.conv1 = GCNConv(input_ch, 16)
+        self.conv2 = GCNConv(16, 32)
+        self.lin = torch.nn.Linear(32, num_classes)
 
     def forward(self, data):
-        x, edge_index = data.x, data.edge_index
+        x, edge_index, batch = data.pos, data.edge_index, data.batch
 
         x = self.conv1(x, edge_index)
         x = F.relu(x)
-        output = self.conv2(x, edge_index)
+        x = self.conv2(x, edge_index)
+        x = F.relu(x)
+
+        x = global_mean_pool(x, batch)
+        output = self.lin(x)
 
         return output 

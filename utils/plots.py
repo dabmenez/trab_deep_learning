@@ -80,10 +80,17 @@ def plot_confusion_matrix(y_true, y_pred, class_names, save_path='confusion_matr
 
 
 def plot_class_performance(y_true, y_pred, class_names, save_path='class_performance.png'):
-    """Plota performance por classe"""
+    """Plota performance por classe e destaca classes sem predições corretas"""
     from sklearn.metrics import precision_recall_fscore_support
+    import warnings
+    warnings.filterwarnings('ignore', category=UserWarning)
     
     precision, recall, f1, support = precision_recall_fscore_support(y_true, y_pred, average=None)
+    
+    # Identificar classes com F1=0
+    zero_f1_classes = [class_names[i] for i, score in enumerate(f1) if score == 0.0]
+    if zero_f1_classes:
+        print(f"[AVISO] As seguintes classes não tiveram nenhuma predição correta (F1=0): {', '.join(zero_f1_classes)}")
     
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
     
@@ -91,13 +98,19 @@ def plot_class_performance(y_true, y_pred, class_names, save_path='class_perform
     x = np.arange(len(class_names))
     width = 0.25
     
+    bars_f1 = ax1.bar(x + width, f1, width, label='F1-Score', alpha=0.8)
     ax1.bar(x - width, precision, width, label='Precision', alpha=0.8)
     ax1.bar(x, recall, width, label='Recall', alpha=0.8)
-    ax1.bar(x + width, f1, width, label='F1-Score', alpha=0.8)
+    
+    # Destacar barras F1=0
+    for i, bar in enumerate(bars_f1):
+        if f1[i] == 0.0:
+            bar.set_color('red')
+            bar.set_alpha(0.7)
     
     ax1.set_xlabel('Classes')
     ax1.set_ylabel('Score')
-    ax1.set_title('Performance por Classe')
+    ax1.set_title('Performance por Classe (F1=0 em vermelho)')
     ax1.set_xticks(x)
     ax1.set_xticklabels(class_names, rotation=45)
     ax1.legend()

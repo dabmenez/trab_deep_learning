@@ -3,3 +3,5 @@
 training_metrics.png
 best_model.pth
 __pycache__/
+ANALISE_PROJETO.md
+training_metrics.json

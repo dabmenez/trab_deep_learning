@@ -24,12 +24,10 @@ def setup_device():
 def load_modelnet_dataset():
     """Carrega o dataset ModelNet10 com data augmentation"""
 
-    # Data augmentation para treino
-    train_transform = FaceToEdge(remove_faces=False)
-    val_transform = FaceToEdge(remove_faces=False)
-
-    train_dataset = ModelNet(root='data/ModelNet10', name='10', train=True, transform=train_transform)
-    val_dataset = ModelNet(root='data/ModelNet10', name='10', train=False, transform=val_transform)
+    # Correct path to download dataset from: Make sure to updata de url in ModelNet class
+    # http://3dvision.princeton.edu/projects/2014/3DShapeNets/ModelNet10.zip
+    train_dataset = ModelNet(root='data/ModelNet10', name='10', train=True, transform=FaceToEdge(remove_faces=False))
+    val_dataset = ModelNet(root='data/ModelNet10', name='10', train=False, transform=FaceToEdge(remove_faces=False))
 
     return normalize(train_dataset), normalize(val_dataset)
 

@@ -1,16 +1,14 @@
 import torch
 from torch_geometric.datasets import ModelNet
-from torch_geometric.transforms import FaceToEdge, RandomRotate
+from torch_geometric.transforms import FaceToEdge
 from torch_geometric.loader import DataLoader
 from sklearn.metrics import accuracy_score, classification_report
 import time
 from tqdm import tqdm
-from model.gcn import GCN3DClassifier, GCN
+from model.gcn import GCN3Conv, GCN2Conv
 from utils.normalizer import normalize
 from utils.plots import plot_training_curves, plot_class_performance, plot_confusion_matrix
 from utils.docs import save_training_metrics, generate_final_report
-import os
-import numpy as np
 
 data_path = "./"  # Caminho relativo para salvar arquivos
 
@@ -25,15 +23,13 @@ def setup_device():
 
 def load_modelnet_dataset():
     """Carrega o dataset ModelNet10 com data augmentation"""
-    # Caminho correto para o root do dataset (diretamente na pasta ModelNet10)
-    dataset_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'data', 'ModelNet10'))
 
     # Data augmentation para treino
     train_transform = FaceToEdge(remove_faces=False)
     val_transform = FaceToEdge(remove_faces=False)
 
-    train_dataset = ModelNet(root=dataset_root, name='10', train=True, transform=train_transform)
-    val_dataset = ModelNet(root=dataset_root, name='10', train=False, transform=val_transform)
+    train_dataset = ModelNet(root='data/ModelNet10', name='10', train=True, transform=train_transform)
+    val_dataset = ModelNet(root='data/ModelNet10', name='10', train=False, transform=val_transform)
 
     return normalize(train_dataset), normalize(val_dataset)
 
@@ -62,7 +58,7 @@ def validate(model, val_loader, criterion, device, epoch):
     preds = torch.cat(all_preds)
     labels = torch.cat(all_labels)
     acc = accuracy_score(labels, preds)
-    # CORREÇÃO: dividir pelo número de batches, não pelo tamanho do dataset
+    
     return total_loss / num_batches, acc, preds, labels
 
 
@@ -87,10 +83,10 @@ def calculate_class_weights(dataset):
 
 def main():
     # Inicializando variaveis - AJUSTADAS PARA GPU PEQUENA
-    batch_size = 8   # 4x maior que o original
-    epochs = 10   # Mantido
-    lr = 5e-4        # Mantido
-    patience = 20    # Mantido
+    batch_size = 8
+    epochs = 200
+    lr = 5e-4
+    patience = 20
     best_val_acc = patience_counter = 0
     train_losses = []
     val_losses = []
@@ -103,14 +99,14 @@ def main():
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
-    # Usar modelo ajustado para GPU pequena
-    model = GCN3DClassifier(
-        input_dim=3, 
-        hidden_dim=64,  # Reduzido de 128 para 64 (ainda melhor que o original)
-        num_classes=10, 
-        dropout=0.3
-    ).to(device)
+    # model = GCN3Conv(
+    #     input_dim=3, 
+    #     hidden_dim=64,  # Reduzido de 128 para 64 (ainda melhor que o original)
+    #     num_classes=10, 
+    #     dropout=0.3
+    # ).to(device)
 
+    model = GCN2Conv(input_ch=3, num_classes=10).to(device)
     print(f"Parâmetros do modelo: {sum(p.numel() for p in model.parameters()):,}")
     
     # Calcular class weights para lidar com desbalanceamento
@@ -123,9 +119,9 @@ def main():
 
     # Treinamento
     start_time = time.time()
-    model.train()
 
     for epoch in range(1, epochs + 1):
+        model.train()
         total_loss = 0.0
         num_batches = 0
 
@@ -164,7 +160,7 @@ def main():
             print(f"Early stopping na época {epoch}")
             break
 
-    
+
     training_time = time.time() - start_time
     
     # Carregar melhor modelo

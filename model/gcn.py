@@ -2,7 +2,7 @@ import torch
 import torch.nn.functional as F
 from torch_geometric.nn import GCNConv, global_mean_pool
 
-class GCN3DClassifier(torch.nn.Module):
+class GCN3Conv(torch.nn.Module):
     def __init__(self, input_dim, hidden_dim, num_classes, dropout=0.3):
         super().__init__()
         self.conv1 = GCNConv(input_dim, hidden_dim)
@@ -40,7 +40,7 @@ class GCN3DClassifier(torch.nn.Module):
         return x
 
 # https://towardsdatascience.com/graph-neural-networks-with-pyg-on-node-classification-link-prediction-and-anomaly-detection-14aa38fe1275/
-class GCN(torch.nn.Module):
+class GCN2Conv(torch.nn.Module):
     def __init__(self, input_ch, num_classes):
         super().__init__()
         self.conv1 = GCNConv(input_ch, 16)

@@ -1,6 +1,6 @@
-# Classificação 3D com Graph Convolutional Networks (GCN)
+# Classificação 3D com Graph Convolutional Networks
 
-Este projeto implementa classificação de objetos 3D usando Graph Convolutional Networks (GCN) com PyTorch Geometric.\
+Este projeto implementa classificação de objetos 3D usando Graph Convolutional Networks (GCN) com PyG.\
 **Autores:** Daniel Menezes & Gabriela Casini
 
 ## Dataset

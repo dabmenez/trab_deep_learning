@@ -1,44 +1,16 @@
-# Classificação 3D com Graph Neural Networks (GCN)
+# Classificação 3D com Graph Convolutional Networks (GCN)
 
-Este projeto implementa classificação de objetos 3D usando Graph Convolutional Networks (GCN) com PyTorch Geometric, comparando performance entre CPU e GPU.
+Este projeto implementa classificação de objetos 3D usando Graph Convolutional Networks (GCN) com PyTorch Geometric.\
+**Autores:** Daniel Menezes & Gabriela Casini
 
-## 🎯 Objetivo
+## Dataset
 
-Classificar objetos 3D do dataset ModelNet10 em 10 categorias diferentes usando GCN, com comparação detalhada entre treinamento em CPU e GPU.
-
-## 📊 Dataset
-
-- **ModelNet10**: ~4000 amostras, 10 classes
+- **ModelNet10**: ~5000 amostras, 10 classes
 - **Classes**: bathtub, bed, chair, desk, dresser, monitor, night_stand, sofa, table, toilet
 - **Formato**: Malhas 3D convertidas para grafos
 
-## 🏗️ Arquitetura
 
-### GCN3DClassifier (CPU)
-- **Camadas GCN**: 2
-- **Hidden Dim**: 64
-- **Batch Size**: 32
-- **Otimizador**: Adam
-
-### GCN3DClassifierGPU (GPU)
-- **Camadas GCN**: 3
-- **Hidden Dim**: 128
-- **Batch Size**: 64
-- **Otimizador**: AdamW
-
-## 📁 Estrutura do Projeto
-
-```
-trab_deep_learning/
-├── train_with_modelnet.py          # Treinamento CPU
-├── train_gpu_optimized.py          # Treinamento GPU
-├── generate_final_report.py        # Relatório final
-├── requirements.txt                # Dependências
-├── README.md                       # Este arquivo
-└── data/                          # Dataset (baixado automaticamente)
-```
-
-## 🚀 Como Usar
+## Como fazer seus próprios experimentos
 
 ### 1. Instalar Dependências
 
@@ -46,174 +18,29 @@ trab_deep_learning/
 pip install -r requirements.txt
 ```
 
-### 2. Treinamento CPU
+### 2. Ajustar o caminho para o projeto
 
 ```bash
-python train_with_modelnet.py
+export PYTHONPATH="${PYTHONPATH}:/path/to/trab_deep_learning" 
+```
+
+### 3. Executar treinamento
+
+```bash
+python scripts/train.py
 ```
 
 **Arquivos gerados:**
-- `best_model_cpu.pth` - Melhor modelo
-- `training_curves_cpu.png` - Curvas de treinamento
-- `confusion_matrix_cpu.png` - Matriz de confusão
-- `class_performance_cpu.png` - Performance por classe
-- `training_metrics_cpu.json` - Métricas detalhadas
-- `relatorio_cpu.md` - Relatório CPU
+- `best_model.pth` - Melhor modelo
+- `training_curves.png` - Curvas de treinamento
+- `confusion_matrix.png` - Matriz de confusão
+- `class_performance.png` - Performance por classe
+- `training_metrics.json` - Métricas detalhadas
+- `relatorio_final.md` - Relatório Final
 
-### 3. Treinamento GPU
 
-```bash
-python train_gpu_optimized.py
-```
-
-**Arquivos gerados:**
-- `best_model_gpu.pth` - Melhor modelo
-- `training_curves_gpu.png` - Curvas de treinamento
-- `confusion_matrix_gpu.png` - Matriz de confusão
-- `class_performance_gpu.png` - Performance por classe
-- `training_metrics_gpu.json` - Métricas detalhadas
-- `relatorio_gpu.md` - Relatório GPU
-
-### 4. Gerar Relatório Final
-
-```bash
-python generate_final_report.py
-```
-
-**Arquivos gerados:**
-- `comprehensive_comparison.png` - Comparação completa
-- `performance_analysis.png` - Análise de performance
-- `executive_summary.png` - Resumo executivo
-- `relatorio_final.md` - Relatório final completo
-
-## 📈 Funcionalidades para Apresentação
-
-### Gráficos Gerados
-1. **Curvas de Treinamento Completas** (6 subplots)
-   - Evolução da Loss
-   - Evolução da Acurácia
-   - Loss em escala logarítmica
-   - Indicador de Overfitting
-   - Convergência da Acurácia
-   - Resumo das métricas finais
-
-2. **Matriz de Confusão**
-   - Visualização clara das predições
-   - Cores diferenciadas para CPU/GPU
-
-3. **Performance por Classe**
-   - Precision, Recall, F1-Score por classe
-   - Distribuição de amostras
-
-4. **Comparação CPU vs GPU**
-   - Gráficos lado a lado
-   - Análise de speedup
-   - Tabela de resumo executivo
-
-### Métricas Salvas
-- **JSON estruturado** com todas as métricas
-- **Timestamps** para rastreamento
-- **Informações do modelo** (arquitetura, hiperparâmetros)
-- **Métricas de treinamento** (loss, acurácia por época)
-- **Resultados finais** (test accuracy, F1-score)
-
-### Relatórios Markdown
-- **Relatórios individuais** para CPU e GPU
-- **Relatório final** com comparação completa
-- **Formatação profissional** para apresentação
-- **Análise de convergência** e overfitting
-
-## 🎓 Resultados Esperados
-
-### CPU
-- Acurácia de teste: ~60-70%
-- Tempo de treinamento: ~30-60 minutos
-- Convergência estável
-
-### GPU
-- Acurácia de teste: ~70-80%
-- Tempo de treinamento: ~15-30 minutos
-- Melhor convergência
-
-## 🔧 Configuração GPU
-
-Se você tiver problemas com CUDA:
-
-1. **Verificar versão do PyTorch:**
-```bash
-python -c "import torch; print(torch.__version__); print(torch.version.cuda)"
-```
-
-2. **Reinstalar PyTorch com CUDA:**
-```bash
-pip uninstall torch torchvision torchaudio
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
-```
-
-3. **Testar CUDA:**
-```bash
-python -c "import torch; print(torch.cuda.is_available()); print(torch.cuda.get_device_name(0))"
-```
-
-## 📊 Análise de Resultados
-
-### Métricas Importantes
-- **Acurácia de Teste**: Performance final no conjunto de teste
-- **F1-Score**: Média harmônica entre precision e recall
-- **Melhor Acurácia de Validação**: Melhor performance durante treinamento
-- **Época de Convergência**: Quando o modelo atinge melhor performance
-
-### Indicadores de Qualidade
-- **Overfitting**: Diferença entre train e validation loss
-- **Convergência**: Estabilidade das métricas
-- **Generalização**: Performance em dados não vistos
-
-## 🎯 Para Apresentação
-
-### Slides Sugeridos
-1. **Introdução**: Objetivo e dataset
-2. **Metodologia**: Arquitetura GCN
-3. **Resultados CPU**: Métricas e gráficos
-4. **Resultados GPU**: Métricas e gráficos
-5. **Comparação**: CPU vs GPU
-6. **Conclusões**: Melhorias e insights
-
-### Gráficos Principais
-- `comprehensive_comparison.png` - Slide de comparação
-- `executive_summary.png` - Slide de resumo
-- `training_curves_cpu.png` e `training_curves_gpu.png` - Curvas de treinamento
-- `confusion_matrix_cpu.png` e `confusion_matrix_gpu.png` - Matriz de confusão
-
-## 🐛 Solução de Problemas
-
-### Erro de CUDA
-```
-RuntimeError: CUDA error: no kernel image is available for execution
-```
-**Solução**: Reinstalar PyTorch com versão CUDA compatível
-
-### Erro de Memória
-```
-RuntimeError: CUDA out of memory
-```
-**Solução**: Reduzir batch_size no código GPU
-
-### Dataset não baixa
-```
-Downloading https://3dvision.princeton.edu/projects/2014/3DShapeNets/ModelNet10.zip
-```
-**Solução**: Verificar conexão com internet, o download é automático
-
-## 📚 Referências
+## Principais Referências
 
 - [PyTorch Geometric](https://pytorch-geometric.readthedocs.io/)
 - [ModelNet Dataset](https://modelnet.cs.princeton.edu/)
 - [Graph Convolutional Networks](https://arxiv.org/abs/1609.02907)
-
-## 👨‍💻 Autor
-
-Projeto desenvolvido para trabalho de Deep Learning - UFF
-
----
-
-**🎉 Pronto para apresentação! Todos os gráficos e relatórios são gerados automaticamente.** 
